@@ -1,0 +1,224 @@
+# #############################################################################
+#
+# Copyright (c) 2003-2004 Zope Foundation and Contributors.
+# All Rights Reserved.
+#
+# This software is subject to the provisions of the Zope Public License,
+# Version 2.1 (ZPL).  A copy of the ZPL should accompany this distribution.
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY AND ALL EXPRESS OR IMPLIED
+# WARRANTIES ARE DISCLAIMED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF TITLE, MERCHANTABILITY, AGAINST INFRINGEMENT, AND FITNESS
+# FOR A PARTICULAR PURPOSE.
+#
+# #############################################################################
+msgid ""
+msgstr ""
+"Project-Id-Version: Development/Unknown\n"
+"POT-Creation-Date: Wed Oct 22 00:48:05 2008\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: Zope 3 Developers <zope3-dev@zope.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: zope/app/locales/extract.py\n"
+
+#: src/zojax/authentication/browser/configlet.pt:16
+msgid "Installed authenticator plugins"
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.pt:18
+msgid "There are no installed authentication plugins."
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.pt:2
+msgid "Portal authentication configuration"
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.pt:3
+msgid "Pluggable authentication is not installed."
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.pt:35
+#: src/zojax/authentication/browser/configlet.pt:38
+msgid "Change state"
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.pt:55
+msgid "Available authenticator plugins"
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.pt:6
+#: src/zojax/authentication/browser/configlet.pt:71
+msgid "Install"
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.py:103
+msgid "Authenticator plugins have been installed."
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.py:116
+msgid "Authenticator plugins have been uninstalled."
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.py:128
+msgid "Authenticator plugin's status has been changed."
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.py:57
+#: src/zojax/authentication/browser/configlet.pt:46
+msgid "Uninstall"
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.py:61
+msgid "Authentication service has been uninstalled."
+msgstr ""
+
+#: src/zojax/authentication/browser/configlet.py:83
+msgid "Authentication service has been installed."
+msgstr ""
+
+#: src/zojax/authentication/browser/defaultlogin.pt:17
+msgid "Password"
+msgstr ""
+
+#: src/zojax/authentication/browser/defaultlogin.pt:19
+msgid "Case sensitive, make sure caps lock is not enabled."
+msgstr ""
+
+#: src/zojax/authentication/browser/defaultlogin.pt:2
+msgid "Account details"
+msgstr ""
+
+#: src/zojax/authentication/browser/defaultlogin.pt:29
+msgid "Log in"
+msgstr ""
+
+#: src/zojax/authentication/browser/defaultlogin.pt:5
+msgid "Login Name"
+msgstr ""
+
+#: src/zojax/authentication/browser/defaultlogin.pt:7
+msgid ""
+"Login names are case sensitive, make sure the caps lock key is not enabled."
+msgstr ""
+
+#: src/zojax/authentication/browser/login-success.pt:2
+msgid "Login successful!"
+msgstr ""
+
+#: src/zojax/authentication/browser/login-success.pt:6
+msgid "You are now logged in as ${UserTitle}."
+msgstr ""
+
+#: src/zojax/authentication/browser/login-success.pt:9
+#: src/zojax/authentication/browser/logout.pt:8
+msgid "Back to the main page."
+msgstr ""
+
+#: src/zojax/authentication/browser/login.pt:10
+msgid "click here to retrieve it"
+msgstr ""
+
+#: src/zojax/authentication/browser/login.pt:17
+msgid "You are not authorized to perform this action."
+msgstr ""
+
+#: src/zojax/authentication/browser/login.pt:18
+msgid "However, you may login as a different user who is authorized."
+msgstr ""
+
+#: src/zojax/authentication/browser/login.pt:2
+msgid "Please log in"
+msgstr ""
+
+#: src/zojax/authentication/browser/login.pt:3
+msgid ""
+"To access this part of the site, you need to log in with your user name and "
+"password."
+msgstr ""
+
+#: src/zojax/authentication/browser/login.pt:9
+msgid "If you have forgotten your password,"
+msgstr ""
+
+#: src/zojax/authentication/browser/login.py:37
+#: src/zojax/authentication/browser/loginitem.pt:1
+msgid "Login"
+msgstr ""
+
+#: src/zojax/authentication/browser/login.py:67
+msgid "You successfully logged in to portal."
+msgstr ""
+
+#: src/zojax/authentication/browser/login.py:82
+msgid "Login failed."
+msgstr ""
+
+#: src/zojax/authentication/browser/loginitem.pt:1
+msgid "Login to portal"
+msgstr ""
+
+#: src/zojax/authentication/browser/logout.pt:2
+msgid "Logout successful!"
+msgstr ""
+
+#: src/zojax/authentication/browser/logout.pt:4
+msgid "You are now logged out."
+msgstr ""
+
+#: src/zojax/authentication/browser/logoutitem.pt:1
+msgid "Logout"
+msgstr ""
+
+#: src/zojax/authentication/browser/ramstorage.pt:10
+msgid "Misses"
+msgstr ""
+
+#: src/zojax/authentication/browser/ramstorage.pt:8
+msgid "Path"
+msgstr ""
+
+#: src/zojax/authentication/browser/ramstorage.pt:9
+msgid "Hits"
+msgstr ""
+
+#: src/zojax/authentication/configure.zcml:42
+msgid "Authentication"
+msgstr ""
+
+#: src/zojax/authentication/configure.zcml:42
+msgid "Portal authentication service configuration."
+msgstr ""
+
+#: src/zojax/authentication/factory.py:47
+msgid "Can't create authenticator plugin."
+msgstr ""
+
+#: src/zojax/authentication/interfaces.py:162
+msgid "Age"
+msgstr ""
+
+#: src/zojax/authentication/interfaces.py:163
+msgid "Maximum age for logged in principal."
+msgstr ""
+
+#: src/zojax/authentication/interfaces.py:168
+msgid "PrincipalInfo storage"
+msgstr ""
+
+#: src/zojax/authentication/nocachingstorage.py:32
+msgid "No Caching storage"
+msgstr ""
+
+#: src/zojax/authentication/principalinfo.py:38
+msgid "RAM PrincipalInfo storage"
+msgstr ""
+
+#: src/zojax/authentication/principalinfo.zcml:10
+msgid "PrincipalInfo Storage"
+msgstr ""
+
+#: src/zojax/authentication/principalinfo.zcml:10
+msgid "RAM PrincipalInfo storage."
+msgstr ""

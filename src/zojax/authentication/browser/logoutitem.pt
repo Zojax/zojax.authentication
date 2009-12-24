@@ -1,0 +1,2 @@
+<a tal:attributes="href string:${view/manager/portal_url}/@@logout.html"
+   i18n:translate="" i18n:domain="zojax.authentication">Logout</a>

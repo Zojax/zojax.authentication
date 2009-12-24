@@ -1,0 +1,9 @@
+<html>
+  <body>
+    <tal:block define="context nocall:maincontext"
+	       content="structure provider:portal.personalbar" />
+    
+    <div tal:content="structure provider:statusMessage"></div>
+    <div tal:content="structure view/render"></div>
+  </body>
+</html>

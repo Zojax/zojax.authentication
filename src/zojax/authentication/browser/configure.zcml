@@ -1,0 +1,60 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.authentication">
+
+  <!-- auth layout -->
+  <zojax:layout
+     name="auth"
+     layout="portal"
+     template="layout.pt"
+     for="zope.app.component.site.SiteManagerContainer" />
+
+  <!-- configlet views -->
+  <zojax:pagelet
+     name="index.html"
+     for="..interfaces.IAuthenticationConfiglet"
+     template="configlet.pt"
+     class=".configlet.ConfigletView"
+     permission="zope.ManageServices" />
+
+  <!-- ram storage -->
+  <zojax:pagelet
+     name="index.html"
+     for="..principalinfo.IRAMCachePrincipalInfoStorage"
+     class=".ramstorage.RAMStorage"
+     template="ramstorage.pt"
+     permission="zope.ManageServices" />
+
+  <!-- skin layer -->
+  <browser:defaultView
+     name="configure.html"
+     for="..authentication.PluggableAuthentication" />
+
+  <!-- login action for IDefaultCredentialsPlugin -->
+  <zojax:pagelet
+     type="login.action"
+     for="zojax.authentication.interfaces.IDefaultCredentialsPlugin"
+     template="defaultlogin.pt"
+     class=".defaultlogin.LoginAction"
+     permission="zope.Public" />
+
+  <!-- default success login action -->
+  <adapter factory=".defaultlogin.SuccessLoginAction" />
+
+  <!-- login -->
+  <include file="login.zcml" />
+
+  <!-- logout -->
+  <include file="logout.zcml" />
+
+  <!-- backward compatibility -->
+  <browser:page
+     name="login_logout"
+     for="*"
+     class="zope.app.security.browser.auth.LoginLogout"
+     permission="zope.Public" />
+
+</configure>

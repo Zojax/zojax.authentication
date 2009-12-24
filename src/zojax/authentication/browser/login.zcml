@@ -1,0 +1,41 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.authentication">
+
+  <!-- login form -->
+  <zojax:pagelet
+     name="login.html"
+     for="zope.app.component.interfaces.ISite"
+     provides=".interfaces.ILoginForm"
+     template="login.pt"
+     class=".login.LoginForm"
+     permission="zope.Public"
+     layout="auth" />
+
+  <!-- login item for personal bar -->
+  <browser:viewlet
+     name="zojax.authentication-login"
+     template="loginitem.pt"
+     class=".loginitem.LoginMenuItem"
+     manager="zojax.personal.bar.interfaces.IPersonalBar"
+     permission="zope.Public"
+     zcml:condition="installed zojax.personal.bar" />
+
+  <browser:page
+     for="*"
+     name="loginAuth"
+     class=".loginitem.LoginPagelet"
+     permission="zope.Public"
+     zcml:condition="installed zojax.personal.bar" />
+
+  <!-- login success page -->
+  <zojax:pagelet
+     name="login-success.html"
+     for="zope.app.component.interfaces.ISite"
+     template="login-success.pt"
+     permission="zope.View" />
+
+</configure>

@@ -1,0 +1,30 @@
+<div i18n:domain="zojax.authentication" class="portal-login-form">
+
+  <h1 tal:condition="view/isAnonymous" i18n:translate="">Please log in</h1>
+  <p i18n:translate="">
+    To access this part of the site, 
+    you need to log in with your user name and password.
+  </p>
+
+  <p>
+    <tal:block i18n:translate="">If you have forgotten your password,</tal:block>
+    <a i18n:translate=""
+       tal:attributes="href string:${view/portalURL}/resetpassword.html?loginid=${request/login|string:}">
+      click here to retrieve it
+    </a>.
+  </p>
+  
+  <p tal:condition="view/join">
+    <tal:block i18n:translate="">New user? If you do not have an account here, </tal:block>
+    <a tal:attributes="href string:${view/portalURL}/join.html">
+      head over to the registration form.</a>
+  </p>
+  
+  <tal:block tal:condition="not:view/isAnonymous">
+    <h1 i18n:translate="">You are not authorized to perform this action.</h1>
+    <p i18n:translate="">However, you may login as a different user who is authorized.</p>
+  </tal:block>
+  
+  <tal:block tal:repeat="login view/logins"
+	     tal:content="structure login/render" />   
+</div>

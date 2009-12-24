@@ -1,0 +1,33 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zcml="http://namespaces.zope.org/zcml"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.authentication">
+
+  <!-- logout support -->
+  <adapter
+     for="zope.publisher.interfaces.browser.IHTTPRequest"
+     provides="zope.app.security.interfaces.ILogoutSupported"
+     factory="zope.app.security.LogoutSupported" />
+
+  <!-- logout item for personal bar -->
+  <browser:viewlet
+     name="zojax.authentication-logout"
+     template="logoutitem.pt"
+     class=".logoutitem.LogoutMenuItem"
+     manager="zojax.personal.bar.interfaces.IPersonalBar"
+     permission="zope.Public"
+     zcml:condition="installed zojax.personal.bar" />
+
+  <!-- logout form -->
+  <zojax:pagelet
+     for="*"
+     name="logout.html"
+     template="logout.pt"
+     class=".logout.LogoutView"
+     provides=".interfaces.ILogoutForm"
+     layout="auth"
+     permission="zope.Public" />
+
+</configure>

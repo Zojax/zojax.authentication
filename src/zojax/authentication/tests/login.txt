@@ -1,0 +1,203 @@
+=============
+Login process
+=============
+
+  >>> from zope import component, event
+  >>> from zope.testbrowser.testing import Browser
+  >>> from zope.app.security.interfaces import IAuthentication
+  >>> from zope.app.component.hooks import getSite, setSite
+  >>> from zope.app.testing.functional import getRootFolder
+
+  >>> from zojax.authentication.interfaces import IAuthenticationConfiglet
+
+  >>> root = getRootFolder()
+  >>> setSite(root)
+  >>> sm = root.getSiteManager()
+
+  >>> configlet = component.getUtility(IAuthenticationConfiglet)
+  >>> configlet.installUtility()
+  >>> configlet.installPrincipalRegistry()
+
+  >>> auth = sm.getUtility(IAuthentication)
+  >>> auth.authenticatorPlugins = auth.authenticatorPlugins + ('authplugin',)
+
+  >>> actor = Browser()
+  >>> actor.handleErrors = False
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...
+  ...<div>zope.anybody</div>
+  <div>Unauthenticated User</div>...
+  ...
+  </html>
+
+Login with last url
+
+  >>> actor.getLink('Login').click()
+  >>> actor.getControl(name='zojax-login').value = 'bob1'
+  >>> actor.getControl(name='zojax-password').value = 'secretcodeq'
+  >>> actor.getControl(name='form.zojax-auth-login').click()
+  >>> print actor.contents
+  <!DOCTYPE...
+  ...
+  <div class="statusWarningMessage">Login failed.</div>
+  ...
+  </html>
+
+  >>> actor.getLink('Login').click()
+  >>> actor.getControl(name='zojax-login').value = 'bob'
+  >>> actor.getControl(name='zojax-password').value = 'secretcode'
+  >>> actor.getControl(name='form.zojax-auth-login').click()
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...
+  ...bob...
+  ...Bob...
+  ...
+  </html>
+
+Logout
+
+  >>> actor.getLink('Logout').click()
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...
+  ...<div>zope.anybody</div>
+  <div>Unauthenticated User</div>...
+  ...
+  </html>
+
+We should have possibility to Login with basic auth when not auth plugins
+
+  >>> auth.authenticatorPlugins = ()
+  >>> actor.open("http://localhost/test.html")
+  >>> actor.getLink('Login').click()
+  Traceback (most recent call last):
+  ...
+  httperror_seek_wrapper: HTTP Error 401: Unauthorized
+  >>> auth.authenticatorPlugins = auth.authenticatorPlugins + ('authplugin',)
+
+Login with default action
+
+  >>> actor.open("http://localhost/login.html")
+  >>> actor.getControl(name='zojax-login').value = 'bob'
+  >>> actor.getControl(name='zojax-password').value = 'secretcode'
+  >>> actor.getControl(name='form.zojax-auth-login').click()
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...
+  ...bob...
+  ...Bob...
+  ...
+  </html>
+
+Challenge
+
+  >>> actor.getLink('Logout').click()
+  >>> actor.open("http://localhost/login.html")
+  >>> actor.getControl(name='zojax-login')
+  <Control name='zojax-login' type='text'>
+  >>> actor.getControl(name='zojax-password')
+  <Control name='zojax-password' type='password'>
+  >>> actor.getControl(name='form.zojax-auth-login')
+  <SubmitControl name='form.zojax-auth-login' type='submit'>
+
+Login as principal from principal registry
+
+  >>> auth.authenticatorPlugins = ('principalRegistry',)
+
+  >>> actor.open("http://localhost/login.html")
+  >>> actor.getControl(name='zojax-login').value = 'mgr'
+  >>> actor.getControl(name='zojax-password').value = 'mgrpw'
+  >>> actor.getControl(name='form.zojax-auth-login').click()
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...
+  ...zope.mgr...
+  ...Manager...
+  ...
+  </html>
+
+Logout
+
+  >>> actor.getLink('Logout').click()
+  >>> print actor.contents
+  <!DOCTYPE...
+  ...
+  <h1>Logout successful!</h1>
+  ...
+  </html>
+
+
+Login form on unauthorized exception
+
+  >>> actor.handleErrors = True
+  >>> actor.open("http://localhost/++etc++site/")
+  >>> '<h1>Please log in</h1>' in actor.contents
+  True
+  
+  >>> actor.url
+  'http://localhost/login.html'
+
+
+On principal removing, clear login info
+
+  >>> actor.getControl(name='zojax-login').value = 'mgr'
+  >>> actor.getControl(name='zojax-password').value = 'mgrpw'
+  >>> actor.getControl(name='form.zojax-auth-login').click()
+
+  >>> actor.open("http://localhost/loginAuth")
+  >>> actor.url
+  'http://localhost/'
+  
+  >>> from zope.publisher.browser import TestRequest
+  >>> from zope.security.management import endInteraction, newInteraction
+  >>> from zojax.authentication.interfaces import PrincipalRemovingEvent
+
+  >>> newInteraction(TestRequest())
+  >>> event.notify(PrincipalRemovingEvent(
+  ...     auth.getPrincipal('zope.mgr')))
+  >>> endInteraction()
+
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...zope.anybody...
+  ...Unauthenticated User...
+  </html>
+
+
+Uninstall authentication utility
+
+  >>> configlet.uninstallUtility(True)
+
+Login without login service
+
+  >>> actor.handleErrors = True
+  >>> actor.open("http://localhost/loginAuth")
+  Traceback (most recent call last):
+  ...
+  httperror_seek_wrapper: HTTP Error 401: Unauthorized
+
+  >>> actor.addHeader("Authorization", "Basic mgr:mgrpw")
+  >>> actor.open("http://localhost/login.html")
+  >>> actor.open("http://localhost/test.html")
+  >>> print actor.contents
+  <html>
+  ...zope.mgr...
+  ...Manager...
+  </html>
+
+  >>> actor.open("http://localhost/login.html")
+  >>> actor.url
+  'http://localhost'
+
+
+Cleanup
+
+  >>> setSite(None)

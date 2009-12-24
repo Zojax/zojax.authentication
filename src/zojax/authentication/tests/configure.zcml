@@ -1,0 +1,22 @@
+<configure 
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   xmlns:zojax="http://namespaces.zope.org/zojax">
+
+  <interface
+     name="DefaultSkin"
+     interface=".tests.IDefaultSkin"
+     type="zope.publisher.interfaces.browser.IBrowserSkinType" />
+
+  <utility
+     name="authplugin"
+     provides="zope.app.authentication.interfaces.IAuthenticatorPlugin"
+     factory=".plugin.AuthPlugin" />
+
+  <zojax:pagelet
+     name="test.html"
+     for="*"
+     template="test.pt"
+     permission="zope.Public" />
+
+</configure>

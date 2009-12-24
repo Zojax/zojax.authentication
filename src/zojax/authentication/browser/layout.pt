@@ -1,0 +1,6 @@
+<div id="z-portal-workspace">
+  <tal:block tal:content="structure provider:statusMessage" />
+
+  <div id="z-authentication" tal:content="structure view/render">
+  </div>
+</div>

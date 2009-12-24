@@ -1,0 +1,34 @@
+<form action="" method="post" tal:attributes="action view/loginURL">
+
+  <fieldset i18n:domain="zojax.authentication">
+    <legend i18n:translate="">Account details</legend>
+
+    <div class="z-form-field">
+      <label for="zojax-login" i18n:translate="">Login Name</label>
+
+      <div i18n:translate="" class="z-form-help">
+	Login names are case sensitive, 
+	make sure the caps lock key is not enabled.
+      </div>
+
+      <input type="text" name="zojax-login" id="zojax-login" />
+    </div>
+
+    <div class="z-form-field">
+      <label for="zojax-password" i18n:translate="">Password</label>
+    
+      <div class="z-form-help" i18n:translate="">
+	Case sensitive, make sure caps lock is not enabled.
+      </div>
+    
+      <input type="password" name="zojax-password" id="zojax-password" />
+    </div>
+
+    <div class="z-form-controls">
+      <input class="z-form-button" type="submit" name="form.zojax-auth-login"
+	     value="Log in" i18n:attributes="value" />
+    </div>
+    <br />
+  </fieldset>
+
+</form>

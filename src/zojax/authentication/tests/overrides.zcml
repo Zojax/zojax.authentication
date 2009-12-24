@@ -1,0 +1,11 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax">
+
+  <zojax:layout
+     title="Test layout"
+     for="zope.app.component.interfaces.ISite"
+     template="testlayout.pt" />
+
+</configure>

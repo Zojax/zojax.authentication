@@ -1,0 +1,155 @@
+<div class="z-topframe" tal:condition="not:view/isPluggable" 
+     i18n:domain="zojax.authentication">
+  <h1 i18n:translate="">Portal authentication configuration</h1>
+  <div i18n:translate="">Pluggable authentication is not installed.</div>
+  <br />
+  <form action="@@index.html" method="post">
+    <input type="submit" class="z-form-standalonebtn"
+	   name="form.authinstall" value="Install" i18n:attributes="value" />
+  </form>
+</div>
+
+<div class="z-topframe" 
+     tal:content="structure view/@@pagelet/form.view" />
+
+<form action="@@index.html" method="post"
+      tal:condition="view/isPluggable" i18n:domain="zojax.authentication">
+
+  <!-- Authenticator plugins -->
+  <div class="z-frame"
+       tal:condition="view/isPluggable" tal:define="items view/installed">
+    <div class="z-form-fieldset">
+      <h2 i18n:translate="">Installed authenticator plugins</h2>
+      <div tal:condition="not:items">
+	<br />
+	<tal:block i18n:translate="">
+	  There are no installed authentication plugins.
+	</tal:block>
+      </div>
+    
+      <tal:block tal:condition="items">
+	<ul class="z-listing">
+	  <li tal:repeat="item items">
+	    <div class="z-listing-icon">
+	      <input type="checkbox" name="plugin_ids:list"
+		     tal:attributes="value item/name" />
+	    </div>
+	    <div class="z-listing-details">
+	      <span tal:condition="not:item/configurable"
+		    tal:content="item/title"></span>
+	      <a href="#" tal:content="item/title" tal:condition="item/configurable"
+		 tal:attributes="href string:${item/name}/"></a>
+	      <a href="#" title="Change state"
+		 tal:condition="item/active" i18n:attributes="title"
+		 tal:attributes="href string:?change_state=${item/name}">(Active)</a>
+	      <a href="#" title="Change state"
+		 tal:condition="not:item/active" i18n:attributes="title"
+		 tal:attributes="href string:?change_state=${item/name}">(Inactive)</a>
+	      <div><tal:block tal:content="item/description"/> &nbsp;</div>
+	    </div>
+	  </li>
+	</ul>
+	<div class="visualClear"></div>
+      </tal:block>
+    </div>
+    <div class="z-form-controls">
+      <hr />
+      <input type="submit" class="z-form-standalonebtn"
+	     name="form.uninstall" value="Uninstall"
+	     i18n:attributes="value" />
+    </div>
+  </div>
+
+  <tal:block define="factories view/listFactories" condition="factories">
+    <br />
+    <div class="z-form-fieldset">
+      <h2 i18n:translate="">Available authenticator plugins</h2>
+      
+      <ul class="z-listing">
+	<li tal:repeat="item factories">
+	  <div class="z-listing-icon">
+	    <input type="checkbox" name="factory_ids:list"
+		   tal:attributes="value python:item[1]" />
+	  </div>
+	  <div class="z-listing-details">
+	    <span tal:content="python:item[0]"></span>
+	    <div><tal:block tal:content="python:item[2]"/> &nbsp;</div>
+	  </div>
+	</li>
+      </ul>
+      <div class="visualClear"></div>
+    </div>
+    <div class="z-form-controls">
+      <hr />
+      <input type="submit" class="z-form-button"
+	     name="form.install" value="Install" i18n:attributes="value" />
+    </div>
+  </tal:block>
+
+  <!-- Credentials plugins -->
+  <div class="z-frame" tal:define="items view/installedCred">
+    <div class="z-form-fieldset">
+      <h2 i18n:translate="">Installed credentials plugins</h2>
+      
+      <div tal:condition="not:items" i18n:translate="">
+	There are no installed credentials plugins.
+      </div>
+      
+      <tal:block tal:condition="items">
+	<ul class="z-listing">
+	  <li tal:repeat="item items">
+	    <div class="z-listing-icon">
+	      <input type="checkbox" name="cred_plugin_ids:list"
+		     tal:attributes="value item/name" />
+	    </div>
+	    <div class="z-listing-details">
+	      <span tal:condition="not:item/configurable"
+		    tal:content="item/title"></span>
+	      <a href="#" tal:content="item/title" tal:condition="item/configurable"
+		 tal:attributes="href string:${item/name}/"></a>
+	      <a href="#" title="Change state"
+		 tal:condition="item/active" i18n:attributes="title"
+		 tal:attributes="href string:?cred_change_state=${item/name}">(Active)</a>
+	      <a href="#" title="Change state"
+		 tal:condition="not:item/active" i18n:attributes="title"
+		 tal:attributes="href string:?cred_change_state=${item/name}">(Inactive)</a>
+	      <div><tal:block tal:content="item/description"/> &nbsp;</div>
+	    </div>
+	  </li>
+	</ul>
+	<div class="visualClear"></div>
+      </tal:block>
+    </div>
+    <div class="z-form-controls">
+      <hr />
+      <input type="submit" class="z-form-standalonebtn"
+	     i18n:attributes="value"
+	     name="form.cred_uninstall" value="Uninstall credential plugin"/>
+    </div>
+    
+    <tal:block define="factories view/listCredentialsFactories" condition="factories">
+      <br />
+      <div class="z-form-fieldset">
+	<h2 i18n:translate="">Available credentials plugins</h2>
+	<ul class="z-listing">
+	  <li tal:repeat="item factories">
+	    <div class="z-listing-icon">
+	      <input type="checkbox" name="cred_factory_ids:list"
+		     tal:attributes="value python:item[1]" />
+	    </div>
+	    <div class="z-listing-details">
+	      <span tal:content="python:item[0]"></span>
+	      <div><tal:block tal:content="python:item[2]"/> &nbsp;</div>
+	    </div>
+	  </li>
+	</ul>
+	<div class="visualClear"></div>
+      </div>
+      <div class="z-form-controls">
+	<hr />
+	<input type="submit" class="z-form-button" i18n:attributes="value"
+	       name="form.cred_install" value="Install credential plugin" />
+      </div>
+    </tal:block>
+  </div>
+</form>

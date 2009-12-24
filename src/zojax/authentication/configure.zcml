@@ -1,0 +1,86 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:i18n="http://namespaces.zope.org/i18n"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.authentication">
+
+  <!-- IAuthentication utility -->
+  <class class=".authentication.PluggableAuthentication">
+    <require
+       permission="zope.Public"
+       interface="zope.app.authentication.interfaces.IPluggableAuthentication"
+       />
+
+    <require
+       permission="zope.ManageSite"       
+       set_schema="zope.app.authentication.interfaces.IPluggableAuthentication" 
+       />
+
+    <require
+       permission="zope.ManageServices"
+       attributes="registrationManager"
+       interface=".interfaces.IAuthenticationSettings"
+       set_schema=".interfaces.IAuthenticationSettings" />
+  </class>
+
+  <subscriber handler=".authentication.beforeTraverseHandler" />
+
+  <!-- security declarations for principal -->
+  <class class="zope.app.authentication.principalfolder.Principal">
+    <allow attributes="login groups getMembers" />
+    <allow interface="zope.security.interfaces.IPrincipal" />
+  </class>
+
+  <!-- Credntials Plugin -->
+  <class class=".credentials.DefaultCredentialsPlugin">
+    <require
+       permission="zope.Public"
+       interface=".interfaces.ICredentialsUpdater" />
+  </class>
+
+  <!-- remove principal handler -->
+  <subscriber
+     for=".interfaces.IPrincipalRemovingEvent"
+     handler=".subscribers.principalRemovingHandler" />
+
+  <!-- configlet -->
+  <zojax:configlet
+     name="system.authentication"
+     title="Authentication"
+     description="Portal authentication service configuration."
+     schema=".interfaces.IAuthenticationConfiglet"
+     class=".configlet.AuthenticationConfiglet"
+     permission="zope.ManageServices" />
+
+  <!-- default login service -->
+  <adapter factory=".login.LoginService" />
+
+  <utility
+     name="default.credentials"
+     component=".credentials.factory" />
+
+  <zojax:pageletType
+     name="login.action"
+     interface=".interfaces.ILoginAction" />
+
+  <!-- principal registry authenticator plugin -->
+  <utility
+     name="principalRegistry"
+     factory=".principalregistry.PrincipalRegistry" />
+
+  <!-- PrincipalInfo Storage-->
+  <include file="principalinfo.zcml" />
+
+  <!-- browser views -->
+  <include package=".browser" />
+
+  <!-- translations -->
+  <i18n:registerTranslations directory="locales"/>
+
+  <!-- generations -->
+  <utility
+     name="zojax.authentication"
+     provides="zope.app.generations.interfaces.ISchemaManager"
+     component=".generations.schemaManager" />
+
+</configure>
