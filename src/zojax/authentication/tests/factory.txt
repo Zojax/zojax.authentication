@@ -1,0 +1,159 @@
+============================
+Authenticator Plugin Factory
+============================
+
+  >>> from zope import component, interface
+
+Let's create plugin stub and factory
+
+  >>> class IAuthPlugin(interface.Interface):
+  ...     """ auth plugin """
+
+  >>> from zope.app.container.contained import Contained
+  >>> from zope.app.security.interfaces import IAuthentication
+  >>> from zope.app.authentication.interfaces import IAuthenticatorPlugin
+  >>> from zojax.authentication.factory import AuthenticatorPluginFactory
+  >>> from zojax.authentication.interfaces import IAuthenticatorPluginFactory
+
+  >>> class AuthPlugin(Contained):
+  ...     interface.implements(IAuthenticatorPlugin, IAuthPlugin)
+  ...     
+  ...     def __init__(self, title='Test Auth Plugin', prefix='zojax.test'):
+  ...         self.prefix = unicode(prefix)
+  ...         self.title = title
+
+We can provide additional interfaces for registration as utility
+
+  >>> factory = AuthenticatorPluginFactory(
+  ...     'auth.plugin', AuthPlugin, ((IAuthPlugin, ''),), u'Test Auth Plugin', u'')
+
+  >>> component.provideUtility(factory, name='auth.plugin')
+
+  >>> auth = component.getUtility(IAuthentication)
+  >>> factory = component.getUtility(IAuthenticatorPluginFactory, name='auth.plugin')
+
+  >>> factory.plugin is None
+  True
+
+  >>> factory.isActive()
+  False
+
+Let's create plugin
+
+  >>> factory.install()
+
+  >>> factory.plugin
+  <zojax.authentication.TESTS.AuthPlugin object at ...>
+
+  >>> component.getUtility(IAuthPlugin)
+  <zojax.authentication.TESTS.AuthPlugin object at ...>
+
+  >>> component.getUtility(IAuthenticatorPlugin, name='auth.plugin')
+  <zojax.authentication.TESTS.AuthPlugin object at ...>
+
+  >>> auth['auth.plugin']
+  <zojax.authentication.TESTS.AuthPlugin object at ...>
+
+Let's check plugin status
+
+  >>> factory.isActive()
+  False
+
+  >>> list(auth.getAuthenticatorPlugins())
+  []
+
+Now let's activate plugin
+
+  >>> factory.activate()
+
+  >>> factory.isActive()
+  True
+
+  >>> auth.authenticatorPlugins
+  ('auth.plugin',)
+
+  >>> list(auth.getAuthenticatorPlugins())
+  [('auth.plugin', <zojax.authentication.TESTS.AuthPlugin object at ...>)]
+
+Deactivate
+
+  >>> factory.deactivate()
+
+  >>> factory.isActive()
+  False
+
+  >>> auth.authenticatorPlugins
+  ()
+
+  >>> list(auth.getAuthenticatorPlugins())
+  []
+
+Uninstall
+
+  >>> factory.uninstall()
+
+  >>> factory.isActive()
+  False
+
+  >>> auth.authenticatorPlugins
+  ()
+
+  >>> print auth.get('auth.plugin')
+  None
+
+We can't activate/deactivate not installed plugin 
+
+  >>> factory.activate()
+  >>> factory.isActive()
+  False
+
+  >>> factory.deactivate()
+  >>> factory.isActive()
+  False
+
+Uninstall on active plugin
+
+  >>> factory.install()
+  >>> factory.activate()
+
+  >>> auth.authenticatorPlugins
+  ('auth.plugin',)
+
+  >>> list(auth.getAuthenticatorPlugins())
+  [('auth.plugin', <zojax.authentication.TESTS.AuthPlugin object at ...>)]
+
+  >>> factory.uninstall()
+
+  >>> auth.authenticatorPlugins
+  ()
+
+  >>> factory.isActive()
+  False
+
+  >>> list(auth.getAuthenticatorPlugins())
+  []
+
+After uninstall utility registration also removed
+
+  >>> print component.queryUtility(IAuthPlugin)
+  None
+
+  >>> print component.queryUtility(IAuthenticatorPlugin, name='auth.plugin')
+  None
+
+
+Factory
+
+  >>> sm  = component.getSiteManager()
+  >>> t = sm.unregisterUtility(sm['auth'], IAuthentication)
+  >>> from zope.app.security.principalregistry import PrincipalRegistry
+  >>> registry = PrincipalRegistry()
+  >>> t = sm.registerUtility(registry, IAuthentication)
+
+  >>> factory.install()
+  Traceback (most recent call last):
+  ...
+  ValueError: Can't create authenticator plugin.
+
+  >>> factory.isActive()
+  False

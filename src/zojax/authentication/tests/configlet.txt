@@ -1,0 +1,173 @@
+========================
+Authentication configlet
+========================
+
+User can change authentication tool configuration in controlpanel
+http://localhost/settings/authentication/
+
+  >>> from zope import component
+  >>> from zope.testbrowser.testing import Browser
+  >>> from zope.app.security.interfaces import IAuthentication
+
+  >>> actor = Browser()
+  >>> actor.handleErrors = False
+  >>> actor.open("http://localhost/settings/authentication/")
+  Traceback (most recent call last):
+  ...
+  Unauthorized: settings
+
+  >>> actor = Browser()
+  >>> actor.addHeader("Authorization", "Basic mgr:mgrpw")
+  >>> actor.handleErrors = False
+
+  >>> actor.open("http://localhost/settings/")
+  >>> actor.getLink('Authentication').click()
+
+We should install authentication utility
+
+  >>> print actor.contents
+  <html>
+  ...Pluggable authentication is not installed...
+  </html>
+
+  >>> actor.getControl(name='form.authinstall').click()
+
+We should register plugins with IAuthenticatorPluginFactory
+
+  >>> print actor.contents
+  <html>
+  ...Authentication service has been installed...
+  ...Portal authentication service configuration...
+  ...There are no installed authentication plugins...
+  </html>
+
+Let's register factory
+
+  >>> from zojax.authentication.tests.plugin import factory
+  >>> from zojax.authentication.interfaces import IAuthenticatorPluginFactory
+
+  >>> component.provideUtility(
+  ...     factory, IAuthenticatorPluginFactory, 'auth.plugin')
+
+  >>> actor.reload()
+  >>> print actor.contents
+  <html>
+  ...There are no installed authentication plugins...
+  ...Available authenticator plugins...
+  ...Test Auth Plugin...
+  </html>
+
+  >>> actor.getControl(name='factory_ids:list').value = ['auth.plugin']
+  >>> actor.getControl(name='form.install').click()
+
+  >>> print actor.contents
+  <html>
+  ...Authenticator plugins have been installed...
+  ...Test Auth Plugin...
+  <a href="?change_state=auth.plugin" title="Change state">(Active)</a>
+  ...
+  </html>
+
+  >>> actor.getLink('(Active)').click()
+  >>> print actor.contents
+  <html>
+  ...Authenticator plugin's status has been changed...
+  ...Test Auth Plugin...
+  <a href="?change_state=auth.plugin" title="Change state">(Inactive)</a>
+  ...
+  </html>
+
+  >>> actor.getLink('(Inactive)').click()
+  >>> print actor.contents
+  <html>
+  ...Authenticator plugin's status has been changed...
+  ...Test Auth Plugin...
+  <a href="?change_state=auth.plugin" title="Change state">(Active)</a>
+  ...
+  </html>
+
+  >>> actor.getControl(name='plugin_ids:list').value = ['auth.plugin']
+  >>> actor.getControl(name='form.uninstall').click()
+
+  >>> print actor.contents
+  <html>
+  ...Authenticator plugins have been uninstalled...
+  ...Portal authentication service configuration...
+  ...There are no installed authentication plugins...
+  ...Available authenticator plugins...
+  ...Test Auth Plugin...
+  </html>
+
+Default Credentials Plugin should been registered by default
+
+  >>> print actor.contents
+  <html>
+  ...Installed credentials plugins...
+  ...Default credentials plugin...
+  ...(Active)...
+  </html>
+
+  >>> actor.getLink('(Active)').click()
+  >>> print actor.contents
+  <html>
+  ...Credentials plugin's status has been changed...
+  ...Default credentials plugin...
+  <a href="?cred_change_state=default.credentials" title="Change state">(Inactive)</a>
+  ...
+  </html>
+
+  >>> actor.getLink('(Inactive)').click()
+  >>> print actor.contents
+  <html>
+  ...Credentials plugin's status has been changed...
+  ...Default credentials plugin...
+  <a href="?cred_change_state=default.credentials" title="Change state">(Active)</a>
+  ...
+  </html>
+
+  >>> actor.getControl(name='cred_plugin_ids:list').value = ['default.credentials']
+  >>> actor.getControl(name='form.cred_uninstall').click()
+
+
+Enclosed sites
+--------------
+
+  >>> from zope.app.folder.folder import Folder
+  >>> from zope.component.interfaces import IComponentLookup
+  >>> from zope.app.security.interfaces import  IAuthentication
+  >>> from zojax.authentication.tests.tests import zojaxAuthentication
+
+  >>> root = zojaxAuthentication.setup.getRootFolder()
+  >>> root['subsite'] = Folder()
+
+  >>> actor.open("http://localhost/subsite/addSiteManager.html")
+  >>> actor.open("http://localhost/subsite/settings/")
+  >>> actor.getLink('Authentication').click()
+  >>> print actor.contents
+  <html>
+  ...
+  <h1>Portal authentication configuration</h1>
+  <div>Pluggable authentication is not installed.</div>
+  ...
+  </html>
+
+  >>> actor.getControl(name='form.authinstall').click()
+  >>> print actor.contents
+  <html>
+  ...
+  <h1 class="z-form-label">Authentication</h1><div class="z-form-description">Portal authentication service configuration.</div>...
+  ...
+  </html>
+
+  >>> auth = component.getUtility(IAuthentication, context=root['subsite'])
+  >>> IComponentLookup(auth) is root['subsite'].getSiteManager()
+  True
+
+  >>> actor.getControl(name='form.buttons.uninstall').click()
+  >>> print actor.contents
+  <html>
+  ...
+  <h1>Portal authentication configuration</h1>
+  <div>Pluggable authentication is not installed.</div>
+  ...
+  </html>

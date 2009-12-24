@@ -1,0 +1,10 @@
+<tal:block i18n:domain="zojax.authentication">
+  <h1 i18n:translate="">Login successful!</h1>
+
+  <p style="font-size: 150%" i18n:translate="">
+    You are now logged in as 
+    <em tal:content="view/request/principal/title"
+	i18n:name="UserTitle">Joe Smith</em>.
+  </p>
+  <a href="." i18n:translate="">Back to the main page.</a>
+</tal:block>

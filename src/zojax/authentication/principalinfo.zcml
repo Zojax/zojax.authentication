@@ -1,0 +1,33 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.authentication">
+
+  <!-- default PrincipalInfo storage -->
+  <adapter factory=".principalinfo.getPrincipalInfoStorage" />
+
+  <!-- RAMCache PrincipalInfo Storage -->
+  <zojax:configlet
+     name="system.authentication.ram"
+     title="PrincipalInfo Storage"
+     description="RAM PrincipalInfo storage."
+     schema=".principalinfo.IRAMCachePrincipalInfoStorage"
+     tests=".principalinfo.isInstalled"
+     permission="zope.ManageServices" />
+
+  <utility
+     name="ram"
+     factory=".principalinfo.RAMCachePrincipalInfoStorage" />
+
+  <!-- no caching -->
+  <utility
+     name="nocaching"
+     factory=".nocachingstorage.NoCachingStorage" />
+
+  <!-- vocabulary -->
+  <utility
+     name="zojax.authentication.principalInfoStorages"
+     provides="zope.schema.interfaces.IVocabularyFactory"
+     component=".principalinfo.principalInfoStorages" />
+
+</configure>
