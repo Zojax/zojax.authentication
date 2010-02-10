@@ -54,12 +54,11 @@ class LoginService(object):
             nextURL = self._generateNextURL()
 
         ISession(request)[SESSION_ID]['nextURL'] = nextURL
-
         request.response.redirect(
             '%s/login.html'%absoluteURL(getSite(), request))
         return True
 
-    def nextURL(self, clear=True):
+    def nextURL(self, clear=False):
         request = self.request
 
         nextURL = request.get('nextURL', u'')
@@ -68,7 +67,6 @@ class LoginService(object):
             return nextURL
 
         session = ISession(request)[SESSION_ID]
-
         if 'nextURL' in session:
             nextURL = session['nextURL']
             if clear:
@@ -113,7 +111,7 @@ class LoginService(object):
                                ISuccessLoginAction)]
         actions.sort()
 
-        nextURL = self.nextURL()
+        nextURL = self.nextURL(True)
         for order, action in actions:
             result = action(nextURL)
             if result:
