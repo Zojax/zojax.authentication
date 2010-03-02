@@ -40,7 +40,7 @@ class SuccessLoginAction(object):
     interface.implements(ISuccessLoginAction)
     component.adapts(IPrincipal, interface.Interface)
 
-    order = 9999999
+    order = 1
 
     def __init__(self, principal, request):
         self.principal = principal
@@ -57,4 +57,4 @@ class SuccessLoginAction(object):
         else:
             response.redirect('%s/'%absoluteURL(getSite(), request))
 
-        return True
+        return False
