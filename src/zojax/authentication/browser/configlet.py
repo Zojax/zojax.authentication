@@ -101,8 +101,8 @@ class ConfigletView(PageletEditForm):
         installed = []
         for name, factory in getUtilitiesFor(factoryIface):
             plugin = queryUtility(pluginIface, name)
-            if plugin is not None and \
-                    sameProxiedObjects(IComponentLookup(plugin), sm):
+            if plugin is not None: # and \
+                    #sameProxiedObjects(IComponentLookup(plugin), sm):
                 config = self.context.get(factory.name)
                 if config is not None and config.isAvailable():
                     configurable = True

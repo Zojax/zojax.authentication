@@ -107,7 +107,7 @@ class PluginFactory(object):
 
         if IPluggableAuthentication.providedBy(auth):
             setattr(auth, self.pluginNames,
-                    tuple(getattr(auth, self.pluginNames)) + (self.name,))
+                    tuple(set(getattr(auth, self.pluginNames) + (self.name,))))
 
     def deactivate(self):
         plugin = self.plugin
@@ -118,7 +118,7 @@ class PluginFactory(object):
         auth = self.auth
 
         if IPluggableAuthentication.providedBy(auth):
-            plugins = list(getattr(auth, self.pluginNames))
+            plugins = set(getattr(auth, self.pluginNames))
             if self.name in plugins:
                 plugins.remove(self.name)
                 setattr(auth, self.pluginNames, tuple(plugins))
