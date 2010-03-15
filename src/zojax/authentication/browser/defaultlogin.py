@@ -27,7 +27,7 @@ from zojax.authentication.interfaces import _, ISuccessLoginAction
 class LoginAction(object):
 
     id = 'default.login'
-    order = 999
+    order = 1
 
     def update(self):
         self.loginURL = u'%s/login.html'%absoluteURL(getSite(), self.request)
