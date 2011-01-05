@@ -53,7 +53,8 @@ class LoginService(object):
         if not nextURL:
             nextURL = self._generateNextURL()
 
-        ISession(request)[SESSION_ID]['nextURL'] = nextURL
+        if not request.getHeader('X-Requested-With', ''):
+            ISession(request)[SESSION_ID]['nextURL'] = nextURL
         request.response.redirect(
             '%s/login.html'%absoluteURL(getSite(), request))
         return True
