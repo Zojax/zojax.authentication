@@ -78,6 +78,8 @@ class LoginService(object):
         return self._generateNextURL()
 
     def _generateNextURL(self):
+        if self.request.getHeader('X-Requested-With', ''):
+            return u''
         stack = self.request.getTraversalStack()
         stack.reverse()
         nextURL = u'/'.join([self.request.getURL(path_only=True)] + stack)
