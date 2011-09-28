@@ -122,6 +122,35 @@ Login as principal from principal registry
   ...Manager...
   ...
   </html>
+  
+
+JSONRPC
+-------
+
+  >>> from zojax.authentication.principalinfo import RAMCachePrincipalInfoStorage
+  >>> from zope.session.interfaces import IClientIdManager
+  >>> old_new = RAMCachePrincipalInfoStorage.get
+  >>> cm = component.getUtility(IClientIdManager)
+  >>> def n(self, auth, request):
+  ...   id = cm.getRequestId(request)
+  ...   cm.setRequestId(request, id)
+  ...   return old_new(self, auth, request) 
+  >>> RAMCachePrincipalInfoStorage.get = n
+  >>> actor.open("http://localhost/test.html")
+  >>> import Cookie
+  >>> C = Cookie.SimpleCookie()
+  >>> C.load(actor.headers['set-cookie'])
+  >>> cookie = C.values()[0].value
+  >>> from z3c.jsonrpc.testing import JSONRPCTestProxy
+  >>> siteURL = 'http://localhost/++skin++JSONRPC.authentication'
+  >>> proxy = JSONRPCTestProxy(siteURL,handleErrors=False)
+  >>> proxy.loginStatus(cookie)
+  {u'profile': {u'avatarImage': None, u'profileImage': None, 
+  u'firstname': u'Manager', u'space': None, u'lastname': u'', 
+  u'registered': None, u'title': u'Manager', u'profileData': None, 
+  u'modified': None, u'avatar': None, u'timezone': None, u'email': u''}, 
+  u'id': u'zope.mgr', u'title': u'Manager'}
+
 
 Logout
 
@@ -171,7 +200,7 @@ On principal removing, clear login info
   ...Unauthenticated User...
   </html>
 
-
+  
 Uninstall authentication utility
 
   >>> configlet.uninstallUtility(True)

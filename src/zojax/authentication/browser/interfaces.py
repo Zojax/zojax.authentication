@@ -11,11 +11,15 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+from zojax.skintool.interfaces import INoSkinSwitching
 """ zojax.authentication.browser interfaces
 
 $Id$
 """
 from zope import schema, interface
+
+from z3c.jsonrpc.layer import IJSONRPCLayer
+
 from zojax.authentication.interfaces import _
 
 
@@ -29,3 +33,7 @@ class ILoginForm(interface.Interface):
 
 class ILogoutForm(interface.Interface):
     """ logout form view """
+
+
+class IJSONRPCLayer(IJSONRPCLayer, INoSkinSwitching):
+    """ jsonrpc layer """

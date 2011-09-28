@@ -49,6 +49,9 @@
 
   <!-- logout -->
   <include file="logout.zcml" />
+  
+  <!-- jsonrpc -->
+  <include file="jsonrpc.zcml" />
 
   <!-- backward compatibility -->
   <browser:page

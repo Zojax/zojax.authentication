@@ -5,7 +5,8 @@
    i18n_domain="zope">
 
   <include package="zojax.autoinclude" file="meta.zcml" />
-  <includeAllDependencies package="zojax.authentication" extras="test" />
+  <includeAllDependencies package="zojax.authentication" exclude="zc.copy"
+        extras="test" />
 
   <include package="zojax.authentication.tests" />
   <includeOverrides package="zojax.authentication.tests" file="overrides.zcml" />
