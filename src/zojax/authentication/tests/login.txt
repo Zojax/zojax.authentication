@@ -143,15 +143,12 @@ JSONRPC
   >>> cookie = C.values()[0].value
   >>> from z3c.jsonrpc.testing import JSONRPCTestProxy
   >>> siteURL = 'http://localhost/++skin++JSONRPC.authentication'
-  >>> proxy = JSONRPCTestProxy(siteURL,handleErrors=False)
-  >>> proxy.loginStatus(cookie)
-  {u'profile': {u'avatarImage': None, u'profileImage': None, 
-  u'firstname': u'Manager', u'space': None, u'lastname': u'', 
-  u'registered': None, u'title': u'Manager', u'profileData': None, 
-  u'modified': None, u'avatar': None, u'timezone': None, u'email': u''}, 
-  u'id': u'zope.mgr', u'title': u'Manager'}
-
-
+  >>> b = Browser()
+  >>> b.handleErrors = False
+  >>> b.post(siteURL, "{'method':'loginStatus', 'id':1, 'params': {'secret': '"+cookie+"'}}", content_type='application/json')
+  >>> b.contents
+  '{"jsonrpc":"2.0","result":{"profile":{"avatarImage":null,"profileImage":null,"firstname":"Manager","title":"Manager","lastname":"","registered":null,"space":null,"profileData":null,"modified":null,"avatar":null,"timezone":null,"email":""},"id":"zope.mgr","title":"Manager"},"id":1}'
+  
 Logout
 
   >>> actor.getLink('Logout').click()
@@ -211,7 +208,7 @@ Login without login service
   >>> actor.open("http://localhost/loginAuth")
   Traceback (most recent call last):
   ...
-  httperror_seek_wrapper: HTTP Error 401: Unauthorized
+  HTTPError: HTTP Error 401: Unauthorized
 
   >>> actor.addHeader("Authorization", "Basic mgr:mgrpw")
   >>> actor.open("http://localhost/login.html")
