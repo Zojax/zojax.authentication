@@ -12,8 +12,8 @@
        />
 
     <require
-       permission="zope.ManageSite"       
-       set_schema="zope.app.authentication.interfaces.IPluggableAuthentication" 
+       permission="zope.ManageSite"
+       set_schema="zope.app.authentication.interfaces.IPluggableAuthentication"
        />
 
     <require
@@ -82,5 +82,12 @@
      name="zojax.authentication"
      provides="zope.app.generations.interfaces.ISchemaManager"
      component=".generations.schemaManager" />
+
+  <!-- cookie handlers -->
+  <subscriber
+     handler=".subscribers.cookieSet" />
+
+  <subscriber
+     handler=".subscribers.cookieDel" />
 
 </configure>
