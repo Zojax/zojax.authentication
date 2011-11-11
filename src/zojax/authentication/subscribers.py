@@ -48,10 +48,12 @@ def cookieSet(event):
     if interaction is not None and interaction.participations:
         request = interaction.participations[0]
         manager = component.getUtility(IClientIdManager)
-        if manager.cookieLifetime:
-            expires = build_http_date(time.time() + manager.cookieLifetime)
-        else:
-            expires = 'Tue, 19 Jan 2038 00:00:00 GMT'
+        expires = None
+        if manager.cookieLifetime is not None:
+            if manager.cookieLifetime:
+                expires = build_http_date(time.time() + manager.cookieLifetime)
+            else:
+                expires = 'Tue, 19 Jan 2038 00:00:00 GMT'
 
         request.response.setCookie(cookie_name, 'authorized', path=cookie_path, expires=expires)
 
