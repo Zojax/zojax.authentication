@@ -21,7 +21,8 @@ from zope.component import getUtility
 from zope.app.http.httpdate import build_http_date
 from zope.session.interfaces import IClientIdManager
 from zope.security.management import queryInteraction
-from zope.app.security.interfaces import IAuthentication
+from zope.app.security.interfaces import IAuthentication, IUnauthenticatedPrincipal
+from zope.app.publication.interfaces import IEndRequestEvent
 
 from interfaces import IPrincipalInfoStorage, IPrincipalRemovingEvent, \
                        IPrincipalLoggedInEvent, IPrincipalLoggingOutEvent
@@ -65,3 +66,7 @@ def cookieDel(event):
         request = interaction.participations[0]
         request.response.expireCookie(cookie_name, path=cookie_path)
 
+@component.adapter(IEndRequestEvent)
+def cookieDelForAnonymous(event):
+    if IUnauthenticatedPrincipal.providedBy(event.request.principal):
+        event.request.response.expireCookie(cookie_name, path=cookie_path)

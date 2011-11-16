@@ -90,4 +90,8 @@
   <subscriber
      handler=".subscribers.cookieDel" />
 
+  <subscriber
+     for="zope.app.publication.interfaces.IEndRequestEvent"
+     handler=".subscribers.cookieDelForAnonymous" />
+
 </configure>
