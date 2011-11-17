@@ -68,5 +68,5 @@ def cookieDel(event):
 
 @component.adapter(IEndRequestEvent)
 def cookieDelForAnonymous(event):
-    if IUnauthenticatedPrincipal.providedBy(event.request.principal):
+    if IUnauthenticatedPrincipal.providedBy(event.request.principal) and event.request.cookies.get(cookie_name):
         event.request.response.expireCookie(cookie_name, path=cookie_path)
