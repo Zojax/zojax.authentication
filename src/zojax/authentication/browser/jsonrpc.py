@@ -73,7 +73,7 @@ class Authentication(publisher.MethodPublisher):
                 try:
                     info = authplugin.authenticateCredentials(credentials)
                     if info is None:
-                        return
+                        continue
                     principal = Principal(
                         auth.prefix + info.id, info.title, info.description)
 
