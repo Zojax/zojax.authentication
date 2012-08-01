@@ -59,8 +59,8 @@ class Authentication(publisher.MethodPublisher):
 
         request = self.request
 
-        if not IUnauthenticatedPrincipal.providedBy(request.principal):
-            return
+        #if not IUnauthenticatedPrincipal.providedBy(request.principal):
+        #    return
 
         if login is not None and password is not None:
             credentials = SimpleCredentials(login, password)
@@ -80,7 +80,7 @@ class Authentication(publisher.MethodPublisher):
                     notify(PrincipalInitializedEvent(principal, auth))
                 except PrincipalInitializationFailed, err:
                     #? cache.loginMessage = err.message
-                    return
+                    return "Authentication Error: %s" % err.message
 
                 notify(AuthenticatedPrincipalCreated(
                         auth, principal, info, request))
@@ -88,6 +88,6 @@ class Authentication(publisher.MethodPublisher):
                 storage.store(auth, request, info, credentials)
 
                 if principal is None:
-                    return
+                    return "Authentication Error: principal is None"
 
                 return str(IClientId(request, None))
