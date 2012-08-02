@@ -24,17 +24,26 @@ from zope.app.authentication.principalfolder import Principal
 from zope.session.interfaces import IClientIdManager, IClientId
 from zope.app.security.interfaces import IUnauthenticatedPrincipal
 from zope.app.authentication.interfaces import AuthenticatedPrincipalCreated
+from zojax.cache.interfaces import ICacheConfiglet
+from zope.app.cache.interfaces import ICache
+from zope.component import getUtility
 
+from datetime import datetime
+from datetime import timedelta 
 from z3c.jsonrpc import publisher
 
+from zojax.cache.tag import ContextTag
+from zojax.cache.timekey import TimeKey, each5minutes
+from zojax.cache.view import cache as view_cache
 from zojax.authentication.credentials import SimpleCredentials
 from zojax.principal.profile.interfaces import IPersonalProfile
 from zojax.authentication.interfaces import IPrincipalInfoStorage,\
     PrincipalInitializedEvent, PrincipalInitializationFailed
 
+OnlineNumTag = ContextTag('online.number')
 
 class Authentication(publisher.MethodPublisher):
-
+    
     def loginStatus(self, secret):
         self.request.response.setCookie(component.getUtility(IClientIdManager).namespace, secret)
         principal = component.getUtility(IAuthentication).authenticate(self.request)
@@ -91,3 +100,41 @@ class Authentication(publisher.MethodPublisher):
                     return
 
                 return str(IClientId(request, None))
+
+    @property
+    def cache(self):
+        return getUtility(ICacheConfiglet).cache
+    
+    @view_cache('zojax.authentication.onlineNumber', OnlineNumTag, TimeKey(minutes=each5minutes))
+    def onlineNumber(self):
+        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})
+        if id_dict:
+            rm_list = []
+            for id, time in id_dict.iteritems():
+               if datetime.now() > time:
+                   rm_list.append(id) 
+            for rm_id in rm_list:
+                del id_dict[rm_id]
+            self.recountOnlineNumber(id_dict)
+            self.cache.set(id_dict, 'zojax.authentication', {'online_users':'id_dict'})
+            num = self.cache.query('zojax.authentication', {'online_users':'number'})
+            if num is not None:
+                return str(num)
+        return '1'
+    
+    def incOnline(self):
+        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})    
+        new_id = self.request.principal.id
+        if id_dict:
+            id_dict[new_id] = self.getExpireTime()
+        else:
+            id_dict = {new_id: self.getExpireTime()}
+        self.recountOnlineNumber(id_dict)
+        self.cache.set(id_dict, 'zojax.authentication', {'online_users':'id_dict'})
+        OnlineNumTag.update(self.context)
+
+    def recountOnlineNumber(self, id_dict):
+        self.cache.set(len(id_dict), 'zojax.authentication', {'online_users':'number'})
+        
+    def getExpireTime(self):
+        return datetime.now() + timedelta(minutes=5)
