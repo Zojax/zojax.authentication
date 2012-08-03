@@ -56,7 +56,7 @@ class LoginService(object):
         if not request.getHeader('X-Requested-With', ''):
             ISession(request)[SESSION_ID]['nextURL'] = nextURL
             request.response.redirect(
-                '%s/login.html'%absoluteURL(getSite(), request))
+                '%s/login.html' % absoluteURL(getSite(), request))
         return True
 
     def nextURL(self, clear=False):
@@ -113,7 +113,6 @@ class LoginService(object):
                    getAdapters((self.request.principal, self.request),
                                ISuccessLoginAction)]
         actions.sort()
-
         nextURL = self.nextURL(True)
         for order, action in actions:
             result = action(nextURL)

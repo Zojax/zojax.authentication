@@ -14,7 +14,7 @@
         for="*"
         class=".jsonrpc.Authentication"
         permission="zope.Public"
-        methods="loginStatus loginPassAuth"
+        methods="loginStatus loginPassAuth incOnline onlineNumber"
         layer="z3c.jsonrpc.layer.IJSONRPCLayer"
     />
 </configure>

@@ -148,6 +148,32 @@ JSONRPC
   >>> b.post(siteURL, "{'method':'loginStatus', 'id':1, 'params': {'secret': '"+cookie+"'}}", content_type='application/json')
   >>> b.contents
   '{"jsonrpc":"2.0","result":{"profile":{"avatarImage":null,"profileImage":null,"firstname":"Manager","title":"Manager","lastname":"","registered":null,"space":null,"profileData":null,"modified":null,"avatar":null,"timezone":null,"email":""},"id":"zope.mgr","title":"Manager"},"id":1}'
+
+Online counter
+
+  >>> new_actor1 = Browser()
+  >>> new_actor1.handleErrors = False
+  >>> new_actor1.open("http://localhost/")
+  >>> new_actor1.getLink('Login').click()
+  >>> new_actor1.getControl(name='zojax-login').value = 'bob1'
+  >>> new_actor1.getControl(name='zojax-password').value = 'secretcodeq'
+  >>> new_actor1.getControl(name='form.zojax-auth-login').click()
+  >>> new_actor1.post(siteURL, '{"jsonrpc":"2.0","method":"incOnline","id":1,"params":{}}', content_type='application/json')
+  >>> new_actor1.contents
+  '{"jsonrpc":"2.0","result":null,"id":1}'
+  >>> new_actor2 = Browser()
+  >>> new_actor2.handleErrors = False
+  >>> new_actor2.open("http://localhost/")
+  >>> new_actor2.getLink('Login').click()
+  >>> new_actor2.getControl(name='zojax-login').value = 'mgr'
+  >>> new_actor2.getControl(name='zojax-password').value = 'mgrpw'
+  >>> new_actor2.getControl(name='form.zojax-auth-login').click()
+  >>> new_actor2.post(siteURL, '{"jsonrpc":"2.0","method":"incOnline","id":1,"params":{}}', content_type='application/json')
+  >>> new_actor2.contents
+  '{"jsonrpc":"2.0","result":null,"id":1}'
+  >>> new_actor2.post(siteURL, '{"jsonrpc":"2.0","method":"onlineNumber","id":1,"params":{}}', content_type='application/json')
+  >>> new_actor2.contents
+  '{"jsonrpc":"2.0","result":"2","id":1}'
   
 Logout
 
