@@ -16,6 +16,7 @@
 $Id$
 """
 import simplejson
+import jsonrpclib
 
 from zope import component
 from zope.event import notify
@@ -29,7 +30,7 @@ from zope.app.cache.interfaces import ICache
 from zope.component import getUtility
 
 from datetime import datetime
-from datetime import timedelta 
+from datetime import timedelta
 from z3c.jsonrpc import publisher
 
 from zojax.cache.tag import ContextTag
@@ -43,7 +44,7 @@ from zojax.authentication.interfaces import IPrincipalInfoStorage,\
 OnlineNumTag = ContextTag('online.number')
 
 class Authentication(publisher.MethodPublisher):
-    
+
     def loginStatus(self, secret):
         self.request.response.setCookie(component.getUtility(IClientIdManager).namespace, secret)
         principal = component.getUtility(IAuthentication).authenticate(self.request)
@@ -104,7 +105,7 @@ class Authentication(publisher.MethodPublisher):
     @property
     def cache(self):
         return getUtility(ICacheConfiglet).cache
-    
+
     @view_cache('zojax.authentication.onlineNumber', OnlineNumTag, TimeKey(minutes=each5minutes))
     def onlineNumber(self):
         id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})
@@ -112,7 +113,7 @@ class Authentication(publisher.MethodPublisher):
             rm_list = []
             for id, time in id_dict.iteritems():
                if datetime.now() > time:
-                   rm_list.append(id) 
+                   rm_list.append(id)
             for rm_id in rm_list:
                 del id_dict[rm_id]
             self.recountOnlineNumber(id_dict)
@@ -121,9 +122,9 @@ class Authentication(publisher.MethodPublisher):
             if num is not None:
                 return str(num)
         return '1'
-    
+
     def incOnline(self):
-        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})    
+        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})
         new_id = self.request.principal.id
         if id_dict:
             id_dict[new_id] = self.getExpireTime()
@@ -135,6 +136,65 @@ class Authentication(publisher.MethodPublisher):
 
     def recountOnlineNumber(self, id_dict):
         self.cache.set(len(id_dict), 'zojax.authentication', {'online_users':'number'})
-        
+
     def getExpireTime(self):
         return datetime.now() + timedelta(minutes=5)
+
+
+class AuthService():
+    """ Simple jsonrpc client implementation for JSONRPC.authentication server.
+
+        Basic example
+        >>> url = 'http://localhost/++skin++JSONRPC.authentication'
+        >>> client = AuthService(url)
+
+        now you can call method from server
+        >>> client.call(
+        ...     method='loginPassAuth',
+        ...     params=dict(login='user', password='pass'))
+
+        and get something like
+        u'x66s15zLuh61OdMVkxeGrt8XdrYbJY6C3pt1nKBZBPs6VLD2dfe2d8'
+
+        also you can call specified method
+        >>> client.loginPassAuth(login='user', password='pass')
+
+        and get something like
+        u'x66s15zLuh61OdMVkxeGrt8XdrYbJY6C3pt1nKBZBPs6VLD2dfe2d8'
+    """
+
+    def __init__(self, url=None):
+        self.url = url
+
+    def call(self, method=None, params=None):
+        """ allows to call any method from JSONRPC.authentication
+        """
+        if not self.url:
+            return "AuthService Error: url is not specified"
+        if not method:
+            return "AuthService Error: method is not specified"
+
+        server = self.Server(self.url)
+        try:
+            if params:
+                result = getattr(server, method)(**params)
+            else:
+                # NOTE: if there are no parameters jsonrpclib returns an error,
+                #       fixed it by adding empty=1
+                result = getattr(server, method)(empty=1)
+        except:
+            return "AuthService Error: %s method unexpected error" % method
+
+        return result
+
+    def Server(self, url):
+        """ using Server from jsonrpclib
+        """
+        return jsonrpclib.Server(url)
+
+    def loginPassAuth(self, login=None, password=None):
+        """ simple call of loginPassAuth method
+        """
+        return self.call(
+            method='loginPassAuth',
+            params=dict(login=login, password=password))

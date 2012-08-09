@@ -122,7 +122,7 @@ Login as principal from principal registry
   ...Manager...
   ...
   </html>
-  
+
 
 JSONRPC
 -------
@@ -134,7 +134,7 @@ JSONRPC
   >>> def n(self, auth, request):
   ...   id = cm.getRequestId(request)
   ...   cm.setRequestId(request, id)
-  ...   return old_new(self, auth, request) 
+  ...   return old_new(self, auth, request)
   >>> RAMCachePrincipalInfoStorage.get = n
   >>> actor.open("http://localhost/test.html")
   >>> import Cookie
@@ -174,7 +174,7 @@ Online counter
   >>> new_actor2.post(siteURL, '{"jsonrpc":"2.0","method":"onlineNumber","id":1,"params":{}}', content_type='application/json')
   >>> new_actor2.contents
   '{"jsonrpc":"2.0","result":"2","id":1}'
-  
+
 Logout
 
   >>> actor.getLink('Logout').click()
@@ -192,7 +192,7 @@ Login form on unauthorized exception
   >>> actor.open("http://localhost/++etc++site/")
   >>> '<h1>Please log in</h1>' in actor.contents
   True
-  
+
   >>> actor.url
   'http://localhost/login.html'
 
@@ -206,7 +206,7 @@ On principal removing, clear login info
   >>> actor.open("http://localhost/loginAuth")
   >>> actor.url
   'http://localhost/'
-  
+
   >>> from zope.publisher.browser import TestRequest
   >>> from zope.security.management import endInteraction, newInteraction
   >>> from zojax.authentication.interfaces import PrincipalRemovingEvent
@@ -223,8 +223,75 @@ On principal removing, clear login info
   ...Unauthenticated User...
   </html>
 
-  
+
+JSONRPC Client
+--------------
+
+Monkey patch that changes jsonrpclib.Server to JSONRPCTestProxy for testing
+
+  >>> from z3c.jsonrpc.testing import JSONRPCTestProxy
+  >>> def TestServer(self, url):
+  ...     return JSONRPCTestProxy(url)
+  >>> from zojax.authentication.browser.jsonrpc import AuthService
+  >>> AuthService.Server = TestServer
+
+  >>> url = 'http://localhost/++skin++JSONRPC.authentication'
+
+Check if url not specified
+
+  >>> client = AuthService()
+  >>> client.call()
+    'AuthService Error: url is not specified'
+
+Specify the url
+
+  >>> client = AuthService(url)
+  >>> client
+    <zojax.authentication.browser.jsonrpc.AuthService instance at ...
+
+Call service without atributes
+
+  >>> client.call()
+    'AuthService Error: method is not specified'
+
+Call a non-existent method
+
+  >>> client.call(method='zzz')
+    'AuthService Error: zzz method unexpected error'
+
+Pass method using wrong syntax
+
+  >>> client.call('zzz')
+    'AuthService Error: zzz method unexpected error'
+
+Call method with required parameters, not passing them
+
+  >>> client.call(method='loginPassAuth')
+
+
+Call method with wrong parameters
+
+  >>> client.call(method='loginPassAuth', params=1)
+    'AuthService Error: loginPassAuth method unexpected error'
+
+Call method with empty parameters
+
+  >>> client.call(method='loginPassAuth', params={})
+
+
+Call method with correct parameters
+
+  >>> client.call(method='loginPassAuth', params=dict(login='mgr', password='mgrpw'))
+    u'...'
+
+Call specified method
+
+  >>> client.loginPassAuth(login='mgr', password='mgrpw')
+    u'...'
+
+
 Uninstall authentication utility
+--------------------------------
 
   >>> configlet.uninstallUtility(True)
 
