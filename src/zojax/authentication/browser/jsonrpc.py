@@ -37,6 +37,7 @@ from zojax.cache.timekey import TimeKey, each5minutes
 from zojax.cache.view import cache as view_cache
 from zojax.authentication.credentials import SimpleCredentials
 from zojax.principal.profile.interfaces import IPersonalProfile
+from zojax.portlets.onlinecounter.interfaces import IVisitCount
 from zojax.authentication.interfaces import IPrincipalInfoStorage,\
     PrincipalInitializedEvent, PrincipalInitializationFailed
 
@@ -138,3 +139,33 @@ class Authentication(publisher.MethodPublisher):
         
     def getExpireTime(self):
         return datetime.now() + timedelta(minutes=5)
+
+    def incPageViews(self):
+        pass
+#
+#        visitor = self.request.principal.id
+#        if visitor is not 'zope.anybody':
+#            context = self.context
+#            adapter = component.getAdapter(context, IVisitCount)
+#            if adapter:
+#                pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
