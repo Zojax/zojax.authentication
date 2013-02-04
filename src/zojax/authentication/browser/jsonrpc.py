@@ -100,6 +100,8 @@ class Authentication(publisher.MethodPublisher):
                     return "Authentication Error: principal is None"
 
                 return str(IClientId(request, None))
+                
+        return "Authentication Error: login or password is empty"
 
     @property
     def cache(self):
