@@ -1,6 +1,8 @@
 function makeOnline(){ 
 	var url = $("head").attr('portal');
 	var params = {};
+    //FOR LOCALHOST
+    url = 'http://localhost:8080/'
 	$.jsonRPC.setup({
 		  endPoint: url + '/++skin++JSONRPC.authentication'
 		});
@@ -17,6 +19,8 @@ function getOnlineNumber(element_id)
 {
 	var url = $("head").attr('portal');
 	var params = {};
+    //FOR LOCALHOST
+    url = 'http://localhost:8080/'
 	$.jsonRPC.setup({
 		  endPoint: url + '/++skin++JSONRPC.authentication'
 		});

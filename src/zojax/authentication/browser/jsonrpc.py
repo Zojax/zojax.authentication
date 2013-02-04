@@ -32,6 +32,7 @@ from datetime import datetime
 from datetime import timedelta 
 from z3c.jsonrpc import publisher
 
+from zojax.cache import default
 from zojax.cache.tag import ContextTag
 from zojax.cache.timekey import TimeKey, each5minutes
 from zojax.cache.view import cache as view_cache
@@ -41,10 +42,10 @@ from zojax.portlets.onlinecounter.interfaces import IVisitCount
 from zojax.authentication.interfaces import IPrincipalInfoStorage,\
     PrincipalInitializedEvent, PrincipalInitializationFailed
 
+
 OnlineNumTag = ContextTag('online.number')
 
 class Authentication(publisher.MethodPublisher):
-    
     def loginStatus(self, secret):
         self.request.response.setCookie(component.getUtility(IClientIdManager).namespace, secret)
         principal = component.getUtility(IAuthentication).authenticate(self.request)
@@ -118,13 +119,15 @@ class Authentication(publisher.MethodPublisher):
                 del id_dict[rm_id]
             self.recountOnlineNumber(id_dict)
             self.cache.set(id_dict, 'zojax.authentication', {'online_users':'id_dict'})
+            if default.onlineUsersKey:
+                default.onlineUsersKey.users = id_dict.keys()
             num = self.cache.query('zojax.authentication', {'online_users':'number'})
             if num is not None:
                 return str(num)
         return '1'
     
     def incOnline(self):
-        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})    
+        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})
         new_id = self.request.principal.id
         if id_dict:
             id_dict[new_id] = self.getExpireTime()
@@ -142,7 +145,14 @@ class Authentication(publisher.MethodPublisher):
 
     def incPageViews(self):
         pass
-#
+        #
+        # visitor = self.request.principal.id
+        #path = urlparse(self.request['HTTP_REFERER']).path
+        #obj = traverse(context, path)
+
+
+
+#obj = traverse(context, path)#
 #        visitor = self.request.principal.id
 #        if visitor is not 'zope.anybody':
 #            context = self.context
