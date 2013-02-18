@@ -15,7 +15,9 @@
 
 $Id$
 """
+import re
 from threading import local
+
 from zope import interface, component
 from zope.event import notify
 from zope.component import \
@@ -109,6 +111,14 @@ class PluggableAuthentication(PluggableAuthentication):
                 return principal
 
     def unauthorized(self, id, request):
+        # see #415 - workaround for MS Office products opening links
+        # without a session in a browser, preventing logged users to see them
+        ua = request.get('HTTP_USER_AGENT')
+        uri = request.get('REQUEST_URI')
+
+        if re.search('[^\w](Word|Excel|PowerPoint|ms-office)([^\w]|\z)', ua, re.I):
+            return request.response.redirect(uri)
+
         login = queryMultiAdapter((self, request), ILoginService)
         if login is not None:
             if login.challenge():
