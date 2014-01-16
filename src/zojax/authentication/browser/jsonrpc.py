@@ -40,7 +40,6 @@ from zojax.principal.profile.interfaces import IPersonalProfile
 from zojax.authentication.interfaces import IPrincipalInfoStorage,\
     PrincipalInitializedEvent, PrincipalInitializationFailed
 
-OnlineNumTag = ContextTag('online.number')
 
 class Authentication(publisher.MethodPublisher):
     
@@ -102,41 +101,3 @@ class Authentication(publisher.MethodPublisher):
                 return str(IClientId(request, None))
                 
         return "Authentication Error: login or password is empty"
-
-    @property
-    def cache(self):
-        return getUtility(ICacheConfiglet).cache
-    
-    @view_cache('zojax.authentication.onlineNumber', OnlineNumTag, TimeKey(minutes=each5minutes))
-    def onlineNumber(self):
-        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})
-        if id_dict:
-            rm_list = []
-            for id, time in id_dict.iteritems():
-               if datetime.now() > time:
-                   rm_list.append(id) 
-            for rm_id in rm_list:
-                del id_dict[rm_id]
-            self.recountOnlineNumber(id_dict)
-            self.cache.set(id_dict, 'zojax.authentication', {'online_users':'id_dict'})
-            num = self.cache.query('zojax.authentication', {'online_users':'number'})
-            if num is not None:
-                return str(num)
-        return '1'
-    
-    def incOnline(self):
-        id_dict = self.cache.query('zojax.authentication', {'online_users':'id_dict'})    
-        new_id = self.request.principal.id
-        if id_dict:
-            id_dict[new_id] = self.getExpireTime()
-        else:
-            id_dict = {new_id: self.getExpireTime()}
-        self.recountOnlineNumber(id_dict)
-        self.cache.set(id_dict, 'zojax.authentication', {'online_users':'id_dict'})
-        OnlineNumTag.update(self.context)
-
-    def recountOnlineNumber(self, id_dict):
-        self.cache.set(len(id_dict), 'zojax.authentication', {'online_users':'number'})
-        
-    def getExpireTime(self):
-        return datetime.now() + timedelta(minutes=5)

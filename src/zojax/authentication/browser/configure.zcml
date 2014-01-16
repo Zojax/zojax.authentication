@@ -59,12 +59,4 @@
      for="*"
      class="zope.app.security.browser.auth.LoginLogout"
      permission="zope.Public" />
-
-  <!-- Online counter script -->
-  <zojax:resourceinclude
-     name="onlineChecker.js"
-     library="zojax" type="javascript"
-     require="jquery jquery.jsonrpc"
-     file="resources/js/onlineChecker.js"/>
-     
 </configure>
