@@ -122,7 +122,7 @@ Login as principal from principal registry
   ...Manager...
   ...
   </html>
-  
+
 
 JSONRPC
 -------
@@ -134,7 +134,7 @@ JSONRPC
   >>> def n(self, auth, request):
   ...   id = cm.getRequestId(request)
   ...   cm.setRequestId(request, id)
-  ...   return old_new(self, auth, request) 
+  ...   return old_new(self, auth, request)
   >>> RAMCachePrincipalInfoStorage.get = n
   >>> actor.open("http://localhost/test.html")
   >>> import Cookie
@@ -149,32 +149,6 @@ JSONRPC
   >>> b.contents
   '{"jsonrpc":"2.0","result":{"profile":{"avatarImage":null,"profileImage":null,"firstname":"Manager","title":"Manager","lastname":"","registered":null,"space":null,"profileData":null,"modified":null,"avatar":null,"timezone":null,"email":""},"id":"zope.mgr","title":"Manager"},"id":1}'
 
-Online counter
-
-  >>> new_actor1 = Browser()
-  >>> new_actor1.handleErrors = False
-  >>> new_actor1.open("http://localhost/")
-  >>> new_actor1.getLink('Login').click()
-  >>> new_actor1.getControl(name='zojax-login').value = 'bob1'
-  >>> new_actor1.getControl(name='zojax-password').value = 'secretcodeq'
-  >>> new_actor1.getControl(name='form.zojax-auth-login').click()
-  >>> new_actor1.post(siteURL, '{"jsonrpc":"2.0","method":"incOnline","id":1,"params":{}}', content_type='application/json')
-  >>> new_actor1.contents
-  '{"jsonrpc":"2.0","result":null,"id":1}'
-  >>> new_actor2 = Browser()
-  >>> new_actor2.handleErrors = False
-  >>> new_actor2.open("http://localhost/")
-  >>> new_actor2.getLink('Login').click()
-  >>> new_actor2.getControl(name='zojax-login').value = 'mgr'
-  >>> new_actor2.getControl(name='zojax-password').value = 'mgrpw'
-  >>> new_actor2.getControl(name='form.zojax-auth-login').click()
-  >>> new_actor2.post(siteURL, '{"jsonrpc":"2.0","method":"incOnline","id":1,"params":{}}', content_type='application/json')
-  >>> new_actor2.contents
-  '{"jsonrpc":"2.0","result":null,"id":1}'
-  >>> new_actor2.post(siteURL, '{"jsonrpc":"2.0","method":"onlineNumber","id":1,"params":{}}', content_type='application/json')
-  >>> new_actor2.contents
-  '{"jsonrpc":"2.0","result":"2","id":1}'
-  
 Logout
 
   >>> actor.getLink('Logout').click()
@@ -192,7 +166,7 @@ Login form on unauthorized exception
   >>> actor.open("http://localhost/++etc++site/")
   >>> '<h1>Please log in</h1>' in actor.contents
   True
-  
+
   >>> actor.url
   'http://localhost/login.html'
 
@@ -206,7 +180,7 @@ On principal removing, clear login info
   >>> actor.open("http://localhost/loginAuth")
   >>> actor.url
   'http://localhost/'
-  
+
   >>> from zope.publisher.browser import TestRequest
   >>> from zope.security.management import endInteraction, newInteraction
   >>> from zojax.authentication.interfaces import PrincipalRemovingEvent
@@ -223,7 +197,7 @@ On principal removing, clear login info
   ...Unauthenticated User...
   </html>
 
-  
+
 Uninstall authentication utility
 
   >>> configlet.uninstallUtility(True)
