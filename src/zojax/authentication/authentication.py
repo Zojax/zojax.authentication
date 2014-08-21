@@ -18,10 +18,11 @@ $Id$
 import re
 from threading import local
 
+from ZODB.interfaces import IDatabase
+
 from zope import interface, component
 from zope.event import notify
-from zope.component import \
-    getUtility, getUtilitiesFor, getMultiAdapter, queryMultiAdapter
+from zope.component import getUtility, getUtilitiesFor, queryMultiAdapter #, getMultiAdapter
 from zope.app.component import queryNextUtility
 from zope.app.component.interfaces import ISite
 from zope.app.security.interfaces import IAuthentication
@@ -62,7 +63,10 @@ class PluggableAuthentication(PluggableAuthentication):
             yield name, plugin
 
     def authenticate(self, request):
-        storage = IPrincipalInfoStorage(self)
+        if isReadonly():
+            storage = getUtility(IPrincipalInfoStorage, 'ram')
+        else:
+            storage = IPrincipalInfoStorage(self)
 
         # use cached PrincipalInfo
         try:
@@ -131,7 +135,11 @@ class PluggableAuthentication(PluggableAuthentication):
     def logout(self, request):
         notify(PrincipalLoggingOutEvent(request.principal))
 
-        storage = IPrincipalInfoStorage(self)
+        if isReadonly():
+            storage = getUtility(IPrincipalInfoStorage, 'ram')
+        else:
+            storage = IPrincipalInfoStorage(self)
+
         storage.clear(self, request)
 
     _caching = True
@@ -153,6 +161,20 @@ class PluggableAuthentication(PluggableAuthentication):
     @property
     def loginMessage(self):
         return cache.loginMessage
+
+
+def isReadonly():
+    readonly = False
+
+    db = getUtility(IDatabase)
+    conn = db.open()
+
+    if conn.isReadOnly():
+        readonly = True
+
+    conn.close()
+
+    return readonly
 
 
 class Cache(local):
