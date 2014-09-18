@@ -23,6 +23,7 @@ from ZODB.interfaces import IDatabase
 from zope import interface, component
 from zope.event import notify
 from zope.component import getUtility, getUtilitiesFor, queryMultiAdapter #, getMultiAdapter
+from zope.component.interfaces import ComponentLookupError
 from zope.app.component import queryNextUtility
 from zope.app.component.interfaces import ISite
 from zope.app.security.interfaces import IAuthentication
@@ -166,13 +167,16 @@ class PluggableAuthentication(PluggableAuthentication):
 def isReadonly():
     readonly = False
 
-    db = getUtility(IDatabase)
-    conn = db.open()
+    try:
+        db = getUtility(IDatabase)
+        conn = db.open()
 
-    if conn.isReadOnly():
-        readonly = True
+        if conn.isReadOnly():
+            readonly = True
 
-    conn.close()
+        conn.close()
+    except ComponentLookupError:
+        pass
 
     return readonly
 
